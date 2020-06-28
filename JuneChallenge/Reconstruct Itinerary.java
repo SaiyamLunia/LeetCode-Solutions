@@ -1,0 +1,50 @@
+Recursive
+
+class Solution {
+    Map<String, PriorityQueue<String>> flights;
+    LinkedList<String> path;
+    
+    public List<String> findItinerary(List<List<String>> tickets) {
+		// Initialization
+        flights = new HashMap<>();
+        path = new LinkedList<>();
+		
+		// build graph 
+        for (List<String> ticket : tickets) {
+            flights.putIfAbsent(ticket.get(0), new PriorityQueue<>());
+            flights.get(ticket.get(0)).add(ticket.get(1));
+        }
+        dfs("JFK");// dfs call from starting airport JFK
+        return path;    
+    }
+    
+    public void dfs(String departure) {
+        PriorityQueue<String> arrivals = flights.get(departure);
+        while (arrivals != null && !arrivals.isEmpty())
+            dfs(arrivals.poll());
+        path.addFirst(departure);
+    }
+}
+Iterative
+
+class Solution {
+    public List<String> findItinerary(List<List<String>> tickets) {
+        Map<String, PriorityQueue<String>> flights = new HashMap<>();
+		// build graph 
+        for (List<String> ticket : tickets) {
+            flights.putIfAbsent(ticket.get(0), new PriorityQueue<>());
+            flights.get(ticket.get(0)).add(ticket.get(1));
+        }
+
+        LinkedList<String> path = new LinkedList<>();
+        Stack<String> stack = new Stack<>();
+        stack.push("JFK");
+        while (!stack.empty()) {
+            while (flights.containsKey(stack.peek()) && !flights.get(stack.peek()).isEmpty())
+                stack.push(flights.get(stack.peek()).poll());
+			path.addFirst(stack.pop());
+        }
+        
+        return path;
+    }
+}
